@@ -1,44 +1,76 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "tree.h"
 
-int main(){
-
+int main() {
+    Nodo* root = NULL;
+    int chave;
 	char opt = '5';
-	DESC_AVL* AVL = NULL;
-	pNodoA* root = NULL;
-	TipoInfo* nodo = NULL;
-	int key = 0;
 
-	system("clear");
+    do {
+        printf("\n==== SELECIONE ====\n");
+        printf("1. Inserir elemento\n");
+        printf("2. Remover elemento\n");
+        printf("3. Buscar elemento\n");
+        printf("4. Imprimir arvere (in-order)\n");
+        printf("5. Visualizar como arvere\n");
+        printf("0. Sair\n");
+        printf(": ");
+        scanf(" %c", &opt);
 
-	while (opt != '0'){
+        switch (opt) {
+            case '1':
 
-	printf("=====MENU=====\n");
-	printf("1. Inserir na arvere\n");
-	printf("2. Imprimir arvere\n");
-	printf("3. Deletar da arvere\n");
-	printf("0. Sair\n");
-	printf(":");
-	scanf(" %c",&opt);
+                printf("Digite o valor a inserir: ");
+                scanf("%d", &chave);
+                root = insereAVL(root, chave);
+                break;
 
-		switch (opt){
+            case '2':
 
-		case '0':
-		exit(1);
-		break;
+                printf("Digite o valor a remover: ");
+                scanf("%d", &chave);
+                root = deleteNodo(root, chave);
+                break;
 
-		case '1':
-		printf("\nInsira o numero que vc deseja inserir:\n");
-		scanf(" %i",&key);
-		nodo = Cria_nodo(key);
-		root = InsereAVL(root, nodo, &AVL->tamanho);
-		break;
+            case '3':
 
-		default:
-		printf("Erro!\n");
-		break;
-		}
-	}
+                printf("Digite o valor a buscar: ");
+                scanf("%d", &chave);
+                Nodo* found = search(root, chave);
+                if (found)
+                    printf("\nElemento %d encontrado na arvere.\n", chave);
+                else
+                    printf("\nElemento %d NAO encontrado.\n", chave);
+                break;
+
+            case '4':
+
+                printf("\nSua arvere: ");
+                inOrder(root);
+                printf("\n");
+                break;
+
+            case '5':
+
+                printf("\nSua arvere:");
+                visualTree(root);
+                printf("\n");
+                break;
+
+            case '0':
+
+                printf("Lembre-se, Jesus é o jardineiro, e as arveres somos nozes\n");
+				printf("Ate mais!\n");
+                freeTree(root);
+                break;
+
+            default:
+
+                printf("Opcao invalida!\n");
+                break;
+        }
+    } while (opt != '0');
+
+    return 0;
 }

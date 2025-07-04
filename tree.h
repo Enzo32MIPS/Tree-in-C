@@ -1,40 +1,23 @@
 #define tree_h
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-struct nodo{
-	struct nodo *pai;
-	int chave;
-	struct nodo *esq;
-	struct nodo *dir;
-	int fator;
-	int balanco;
-};
-typedef struct nodo TipoInfo;
+typedef struct Nodo {
+    int chave;
+    int height;
+    struct Nodo *esq;
+    struct Nodo *dir;
+    struct Nodo *pai;
+} Nodo;
 
-struct desc_avl{
-	struct nodo *raiz;
-	int* tamanho;
-};
-typedef struct desc_avl DESC_AVL;
-
-struct TNodoA{
-	TipoInfo* info;
-	int FB;
-	DESC_AVL* tree;
-	struct TNodoA *esq;
-	struct TNodoA *dir;
-};
-typedef struct TNodoA pNodoA;
-
-pNodoA* rotacao_direita(pNodoA* pt);
-pNodoA* rotacao_esquerda(pNodoA *pt);
-pNodoA* rotacao_dupla_direita (pNodoA* pt);
-pNodoA* rotacao_dupla_esquerda (pNodoA *pt);
-pNodoA* InsereAVL (pNodoA *a, TipoInfo* x, int* ok);
-pNodoA* Caso1 (pNodoA *a , int *ok);
-pNodoA* Caso2 (pNodoA *a , int *ok);
-TipoInfo* Cria_nodo(int key);
-void TreeBCheck(pNodoA* root);
-void NodoFBCheck(TipoInfo* nodo);
+int alturaTree(Nodo *n);
+int max(int a, int b);
+Nodo* Cria_Nodo(int chave);
+int balanco(Nodo *n);
+Nodo* dirRotate(Nodo *y);
+Nodo* esqRotate(Nodo *x);
+Nodo* insereAVL(Nodo* node, int chave);
+Nodo* minValueNodo(Nodo* node);
+Nodo* deleteNodo(Nodo* root, int chave);
+Nodo* search(Nodo* root, int chave);
+void inOrder(Nodo* root);
+void freeTree(Nodo* root);
+void visualTree(Nodo* root);

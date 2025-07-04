@@ -1,209 +1,186 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "tree.h"
 
-void TreeBCheck(pNodoA* root){
-
-	int h_esq = 0, h_dir = 0;
-	TipoInfo* aux = root->info;
-
-	while(aux != NULL){
-		aux = root->info->esq;
-		h_esq++;
-	}
-	aux = root->info;
-	while(aux != NULL){
-		aux = root->info->esq;
-		h_dir++;
-	}
-
-	root->FB = (h_esq - h_dir);
-
-	printf("A altura da arvere eh de: %i",root->FB);
+int alturaTree(Nodo *n) {
+    if (n){
+        return n->height;
+    } else {
+        return 0;
+    }
 }
 
-void NodoFBCheck(TipoInfo* nodo){
-
-	int qnt_esq = 0, qnt_dir = 0;
-	TipoInfo* aux = nodo;
-
-	while (aux != NULL){
-		aux = nodo->esq;
-		qnt_esq++;
-	}
-	aux = nodo;
-	while (aux != NULL){
-		aux = nodo->dir;
-		qnt_dir++;
-	}
-
-	nodo->fator = (qnt_esq - qnt_dir);
-
-	printf("A altura desse nodo eh de: %i",nodo->fator);
-
+int max(int a, int b) {
+    if (a > b){
+        return a;
+    } else {
+        return b;
+    }
 }
 
-TipoInfo* Cria_nodo(int key){
-
-	TipoInfo* nodo = (TipoInfo*) malloc(sizeof(TipoInfo));
-
-	nodo->pai = NULL;
-	nodo->esq = NULL;
-	nodo->dir = NULL;
-	nodo->fator = 0;
-	nodo->balanco = 0;
-	nodo->chave = key;
-
-	return nodo;
+Nodo* Cria_Nodo(int chave) {
+    Nodo* node = (Nodo*)malloc(sizeof(Nodo));
+    node->chave = chave;
+    node->height = 1;
+    node->esq = node->dir = NULL;
+    return node;
 }
 
-pNodoA* rotacao_direita(pNodoA* pt){
-	pNodoA *ptu;
-
-	ptu = pt->esq;
-	pt->esq = ptu->dir;
-	ptu->dir = pt;
-	pt->FB = 0;
-	pt = ptu;
-
-	return pt;
+int balanco(Nodo *n) {
+    if (n){
+        return alturaTree(n->esq) - alturaTree(n->dir);
+    } else {
+        return 0;
+    }
 }
 
-pNodoA* rotacao_esquerda(pNodoA *pt){
-	pNodoA *ptu;
+Nodo* dirRotate(Nodo *y) {
+    Nodo *x = y->esq;
+    Nodo *T2 = x->dir;
 
-	ptu = pt->dir;
-	pt->dir = ptu->esq;
-	ptu->esq = pt;
-	pt->FB = 0;
-	pt = ptu;
+    x->dir = y;
+    y->esq = T2;
 
-	return pt;
+    y->height = max(alturaTree(y->esq), alturaTree(y->dir)) + 1;
+    x->height = max(alturaTree(x->esq), alturaTree(x->dir)) + 1;
+
+    return x;
 }
 
-pNodoA* rotacao_dupla_direita (pNodoA* pt){
-	pNodoA *ptu, *ptv;
+Nodo* esqRotate(Nodo *x) {
+    Nodo *y = x->dir;
+    Nodo *T2 = y->esq;
 
-	ptu = pt->esq;
-	ptv = ptu->dir;
-	ptu->dir = ptv->esq;
-	ptv->esq = ptu;
-	pt->esq = ptv->dir;
-	ptv->dir = pt;
-	if (ptv->FB == 1) ptu->FB = -1;
-	else ptu->FB = 0;
-	if (ptv->FB == -1) pt->FB = 1;
-	else pt->FB = 0;
-	pt = ptv;
+    y->esq = x;
+    x->dir = T2;
 
-	return pt;
+    x->height = max(alturaTree(x->esq), alturaTree(x->dir)) + 1;
+    y->height = max(alturaTree(y->esq), alturaTree(y->dir)) + 1;
+
+    return y;
 }
 
-pNodoA* rotacao_dupla_esquerda (pNodoA *pt){
-	pNodoA *ptu, *ptv;
+Nodo* insereAVL(Nodo* node, int chave) {
+    if (!node) return Cria_Nodo(chave);
 
-	ptu = pt->dir;
-	ptv = ptu->esq;
-	ptu->esq = ptv->dir;
-	ptv->dir = ptu;
-	pt->dir = ptv->esq;
-	ptv->esq = pt;
-	if (ptv->FB == 1) pt->FB = -1;
-	else pt->FB = 0;
-	if (ptv->FB == -1) ptu->FB = 1;
-	else ptu->FB = 0;
-	pt = ptv;
+    if (chave < node->chave)
+        node->esq = insereAVL(node->esq, chave);
+    else if (chave > node->chave)
+        node->dir = insereAVL(node->dir, chave);
+    else
+        return node;
 
-	return pt;
+    node->height = 1 + max(alturaTree(node->esq), alturaTree(node->dir));
+    if (node->height > 1){
+        node->pai =
+    }
+    int balance = balanco(node);
+
+    if (balance > 1 && chave < node->esq->chave)
+        return dirRotate(node);
+    if (balance < -1 && chave > node->dir->chave)
+        return esqRotate(node);
+    if (balance > 1 && chave > node->esq->chave) {
+        node->esq = esqRotate(node->esq);
+        return dirRotate(node);
+    }
+    if (balance < -1 && chave < node->dir->chave) {
+        node->dir = dirRotate(node->dir);
+        return esqRotate(node);
+    }
+
+    return node;
 }
 
-
-pNodoA* InsereAVL (pNodoA *a, TipoInfo* x, int* ok){
-/* Insere nodo em uma árvore AVL, onde A representa a raiz da árvore, x, a chave a ser inserida e h a altura da árvore */
-	if (a == NULL){
-		a = (pNodoA*)malloc(sizeof(pNodoA));
-		a->info = x;
-		a->esq = NULL;
-		a->dir = NULL;
-		a->FB = 0;
-		a->tree->raiz = x;
-		*ok = 1;
-	}
-
-	else if (x->fator < a->FB){
-		a->esq = InsereAVL(a->esq,x,ok);
-		if (ok){
-			switch (a->FB) {
-
-			case -1:
-			a->FB = 0;
-			*ok = 0;
-			break;
-
-			case 0:
-			a->FB = 1;
-			break;
-
-			case 1:
-			a=Caso1(a,ok);
-			break;
-			}
-		}
-	} else {
-		a->dir = InsereAVL(a->dir,x,ok);
-		if (ok) {
-			switch (a->FB) {
-
-			case 1:
-			a->FB = 0;
-			ok = 0;
-			break;
-
-			case 0:
-			a->FB = -1;
-			break;
-
-			case -1:
-			a = Caso2(a,ok);
-			break;
-			}
-		}
-	}
-	(a->tree->tamanho)++;
-	return a;
+Nodo* minValueNodo(Nodo* node) {
+    Nodo* current = node;
+    while (current->esq)
+        current = current->esq;
+    return current;
 }
 
-pNodoA* Caso1 (pNodoA *a , int *ok){
-	pNodoA *ptu;
+Nodo* deleteNodo(Nodo* root, int chave) {
+    if (!root) {
+        return root;
+    }
 
-	ptu = a->esq; //nodo filho
-	if (ptu->FB == 1) {
-		printf("fazendo rotacao direita em %d\n",a->info);
-		a = rotacao_direita(a);
-	} else {
-		printf("fazendo rotacao dupla direita em %d\n",a->info);
-		a = rotacao_dupla_direita(a);
-	}
+    if (chave < root->chave){
+        root->esq = deleteNodo(root->esq, chave);
+    } else
+    if (chave > root->chave) {
+        root->dir = deleteNodo(root->dir, chave);
+    } else {
+        if (!root->esq || !root->dir) {
+            Nodo *temp = root->esq ? root->esq : root->dir;
+            if (!temp) {
+                free(root);
+                return NULL;
+            } else {
+                Nodo *old = root;
+                root = temp;
+                free(old);
+            }
+        } else {
+            Nodo *temp = minValueNodo(root->dir);
+            root->chave = temp->chave;
+            root->dir = deleteNodo(root->dir, temp->chave);
+        }
+    }
 
-	a->FB = 0;
-	*ok = 0;
-	return a;
+    root->height = 1 + max(alturaTree(root->esq), alturaTree(root->dir));
+    int balance = balanco(root);
+
+    if (balance > 1 && balanco(root->esq) >= 0)
+        return dirRotate(root);
+    if (balance > 1 && balanco(root->esq) < 0) {
+        root->esq = esqRotate(root->esq);
+        return dirRotate(root);
+    }
+    if (balance < -1 && balanco(root->dir) <= 0)
+        return esqRotate(root);
+    if (balance < -1 && balanco(root->dir) > 0) {
+        root->dir = dirRotate(root->dir);
+        return esqRotate(root);
+    }
+
+    return root;
 }
 
-pNodoA* Caso2 (pNodoA *a , int *ok){
-	pNodoA *ptu;
+Nodo* search(Nodo* root, int chave) {
+    if (!root || root->chave == chave) {
+        return root;
+    }
+    if (chave < root->chave) {
+        return search(root->esq, chave);
+    } else {
+        return search(root->dir, chave);
+    }
+}
 
-	ptu = a->dir; //nodo filho
-	if (ptu->FB == -1) {
-		printf("fazendo rotacao esquerda em %d\n",a->info);
-		a=rotacao_esquerda(a);
-	} else {
-		printf("fazendo rotacao dupla esquerda em %d\n",a->info);
-		a=rotacao_dupla_esquerda(a);
-	}
+void inOrder(Nodo* root) {
+    if (root) {
+        inOrder(root->esq);
+        printf("%d ", root->chave);
+        inOrder(root->dir);
+    }
+}
 
-	a->FB = 0;
-	*ok = 0;
-	return a;
+void freeTree(Nodo* root) {
+    if (!root) {
+        return;
+    }
+    freeTree(root->esq);
+    freeTree(root->dir);
+    free(root);
+}
+
+void visualTree(Nodo* root){
+    if (!root){
+        return;
+    }
+    Nodo* aux = root;
+    while (aux){
+        printf("\t%i\n",aux->chave);
+        aux = aux->esq;
+    }
 }
