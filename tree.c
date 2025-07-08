@@ -71,9 +71,6 @@ Nodo* insereAVL(Nodo* node, int chave) {
         return node;
 
     node->height = 1 + max(alturaTree(node->esq), alturaTree(node->dir));
-    if (node->height > 1){
-        node->pai =
-    }
     int balance = balanco(node);
 
     if (balance > 1 && chave < node->esq->chave)
@@ -147,7 +144,7 @@ Nodo* deleteNodo(Nodo* root, int chave) {
 }
 
 Nodo* search(Nodo* root, int chave) {
-    if (!root || root->chave == chave) {
+    if (!root || root->chave == chave){
         return root;
     }
     if (chave < root->chave) {
@@ -174,13 +171,35 @@ void freeTree(Nodo* root) {
     free(root);
 }
 
-void visualTree(Nodo* root){
-    if (!root){
+void visualTree(Nodo* root, int space) {
+    if (root == NULL)
         return;
-    }
-    Nodo* aux = root;
-    while (aux){
-        printf("\t%i\n",aux->chave);
-        aux = aux->esq;
-    }
+
+    // Aumenta a distância entre os níveis
+    int teste = 5;
+    space += teste;
+
+    // Primeiro faz a parte direita
+    visualTree(root->dir, space);
+
+    // Imprimir o nodo atual depois do espaçamento
+    printf("\n");
+    for (int i = teste; i < space; i++)
+        printf(" ");
+    printf("%d\n", root->chave);
+
+    // Parte esquerda da arvore
+    visualTree(root->esq, space);
 }
+
+
+
+
+
+
+
+
+
+
+
+

@@ -53,8 +53,8 @@ int main() {
 
             case '5':
 
-                printf("\nSua arvere:");
-                visualTree(root);
+                printf("\nSua arvere:\n");
+                visualTree(root,0);
                 printf("\n");
                 break;
 

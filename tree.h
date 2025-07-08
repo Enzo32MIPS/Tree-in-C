@@ -20,4 +20,4 @@ Nodo* deleteNodo(Nodo* root, int chave);
 Nodo* search(Nodo* root, int chave);
 void inOrder(Nodo* root);
 void freeTree(Nodo* root);
-void visualTree(Nodo* root);
+void visualTree(Nodo* root, int space);
